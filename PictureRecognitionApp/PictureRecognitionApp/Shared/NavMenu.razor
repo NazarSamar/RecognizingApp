@@ -1,0 +1,44 @@
+﻿<div class="@NavMenuCssClass" @onclick="ToggleNavMenu" style="width:100%"> 
+	<nav class="flex-column" style="width:100%">
+		<div class="nav-item me-auto">
+			<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+				<span class="oi oi-home" aria-hidden="true"></span>Головна сторінка
+			</NavLink>
+		</div>		
+
+		<div class="nav-item ms-auto">
+			<NavLink class="nav-link" href="predictText">
+				<span class="oi oi-document" aria-hidden="true"></span>Розпізнавання тексту
+			</NavLink>
+		</div>
+
+		<div class="nav-item ms-auto" style="width:100%">
+			<NavLink class="nav-link" href="predictImage" style="width:100%">
+				<span class="oi oi-camera-slr" aria-hidden="true"></span>Розпізнавання зображень
+			</NavLink>
+		</div>
+		
+		<div class="nav-item ms-auto">
+			<NavLink class="nav-link" href="getImageClassesSymbols">
+				<span class="oi oi-list-rich" aria-hidden="true"></span>Класи та символи
+			</NavLink>
+		</div>
+
+		<div class="nav-item ms-auto">
+			<NavLink class="nav-link" href="fetchdata">
+				<span class="oi oi-grid-three-up" aria-hidden="true"></span>Список зображень
+			</NavLink>
+		</div>		
+	</nav>
+</div>
+
+@code {
+	private bool collapseNavMenu = true;
+
+	private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+	private void ToggleNavMenu()
+	{
+		collapseNavMenu = !collapseNavMenu;
+	}
+}

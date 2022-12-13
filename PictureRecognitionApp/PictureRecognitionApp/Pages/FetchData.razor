@@ -1,0 +1,58 @@
+﻿@page "/fetchdata"
+
+@using PictureRecognitionApp.Data
+@inject ImageService imageService
+
+<h1 style="text-align:center">Інформація про список зображень</h1>
+
+<p>Цей розділ використовується для роботи над великою кількістю зображень. 
+Надає можливість отримувати інформації про кожне зображення, розпізнавати текст та об'єкти що містяться у окремому вибраному зображенні.</p>
+
+@if (images == null)
+{
+	<div class="spinner-border" role="status">
+		<span class="sr-only">Завантаження даних...</span>
+	</div>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Ім'я</th>
+				<th>Розмір</th>
+				<th>Розпізнати текст</th>
+				<th>Розпізнати картинку</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var image in images)
+			{
+				<tr>				
+					<td>@image.Name</td>
+					<td>@image.Size</td>
+					<td><a href="predictText">Розпізнати текст</a></td>
+					<td><a href="predictImage">Розпізнати картинку</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private ImageFile[] images;
+
+	protected override async Task OnInitializedAsync()
+	{
+		images = await imageService.GetImagesAsync();
+	}
+
+	protected async Task RecognitionText()
+	{
+		//
+	}
+	protected async Task RecognitionImage()
+	{
+		//
+	}
+}

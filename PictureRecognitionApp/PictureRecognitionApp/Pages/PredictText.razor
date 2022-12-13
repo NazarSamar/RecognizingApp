@@ -1,0 +1,162 @@
+﻿@page "/predictText"
+@using System 
+@using System.IO
+
+@using PictureRecognitionApp.Data
+@inject ImageService imageService
+
+<h3>Завантажте файл для розпізнавання тексту</h3>
+
+
+<label for="fileinput" class="btn btn-dark btn-lg btn-block" style="margin:10px;width:100%">
+    Завантажити зображення
+    <span class="oi oi-paperclip"></span>
+    <InputFile id="fileinput" class="custom-input-hide" OnChange="@LoadFiles"/>
+</label>
+
+@if(@imageFile=="")
+{
+   <button class="btn btn-dark btn-lg btn-block" @onclick=RecognizeText disabled>Розпізнати текст</button>
+}
+else
+{
+   <button class="btn btn-dark btn-lg btn-block" @onclick=RecognizeText >Розпізнати текст</button>
+} 
+
+<style>
+    .label-wrapper:hover {
+        cursor: pointer;
+    }
+
+    .custom-input-hide {
+        width: 0;
+        height: 0;
+        overflow: hidden;
+    }
+    button
+    {
+        margin:10px;
+        width:100%
+    }
+    .d-flex
+    {
+        justify-content: center;
+    }
+    h3{
+        text-align:center;
+    }
+</style>
+@if (isLoading)
+{
+    <div class="spinner-border" role="status">
+		<span class="sr-only">Завантажується...</span>
+	</div>
+}
+else
+{
+    if (filelocation != "")
+    {
+        <table class="table table-dark">
+            <thead>
+                <tr>
+                    <th scope="col">Ім'я</th>
+                    <th scope="col">Час останнього змінення</th>
+                    <th scope="col">Розмір (у байтах)</th>
+                    <th scope="col">Тип зображення</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var file in loadedFiles)
+                {
+                    <tr>
+                        <td>@file.Name</td>
+                        <td>@file.LastModified.ToString()</td>
+                        <td>@file.Size</td>
+                        <td>@file.ContentType</td>                    
+                    </tr>
+                }     
+            </tbody>
+        </table>
+    }
+
+    if(@imageFile!="")
+    {
+        <img src="http://localhost:100/uploads1/@imageFile" style="width:50%"/>
+    }
+    
+}
+
+@if (Recognition)
+{
+    @if (isRecognized)
+    {
+        <div class="d-flex align-items-center">
+            <strong>Розпізнано текст: @recognizedText</strong>         
+        </div>
+    }
+    else
+    {
+        <br />
+        <div class="d-flex align-items-center">
+            <strong>Розпізнаємо текст...</strong>
+            <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+        </div>
+    }
+}
+
+@code {
+    private List<IBrowserFile> loadedFiles = new();
+    private bool isLoading;
+    private bool Recognition;
+    private bool isRecognized;
+    private string filelocation = "";
+    private string imageFile = "";
+    private string dir = $"{Environment.CurrentDirectory}";
+    private string folder = @"E:\Coursework\PictureRecognition\PictureRecognition\uploads1";
+    private string recognizedText = "";
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        Recognition = false;
+        isLoading = true;
+        loadedFiles.Clear();
+
+        foreach (var file in e.GetMultipleFiles())
+        {
+            try
+            {
+                loadedFiles.Add(file);
+
+                imageFile = file.Name;
+                var path = Path.Combine(folder, imageFile);
+
+                await using FileStream fs = new(path, FileMode.Create);
+                await file.OpenReadStream(10000000000).CopyToAsync(fs);
+                filelocation = path;
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        isLoading = false;
+    }
+
+    private async Task RecognizeText()
+    {
+        Recognition = true;
+        try
+        {
+            isRecognized = false;
+            recognizedText = await imageService.PredictText(filelocation, imageFile);
+            isRecognized = true;
+        }
+        catch (Exception ex)
+        {
+            
+            throw;
+        }
+       
+    }
+}
