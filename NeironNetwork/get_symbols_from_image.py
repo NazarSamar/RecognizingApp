@@ -1,13 +1,14 @@
 import cv2
 import numpy as np
-
+import os
+from pathlib import Path
 
 def get_symbols_from_image(image_file: str):
     letters = []
     out_size = 28
-
-    image = cv2.imread(image_file)
+    image = cv2.imread(image_file,cv2.IMREAD_COLOR)
     result = image.copy()
+    
 
     # переводить зображення в чорнобілий формат
     gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
@@ -22,7 +23,7 @@ def get_symbols_from_image(image_file: str):
     # cv2.RETR_EXTERNAL - видає лише зовнішні контури символа
     # cv2.CHAIN_APPROX_SIMPLE - склеєює всі горизонтальні, вертикальні і діагональні контури
     # контури це список всіх найдених контурів, який представляється в вигляді вектора
-    changed, contours, hierarchy = cv2.findContours(img_erode, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(img_erode, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     color_line = (34, 139, 34)
     width_line = 1
     for c in contours:
